@@ -4,11 +4,12 @@ import numpy as np
 
 
 class SMO:
-    def __init__(self, C, tolerance=1e-5, max_iteration=10):
+    def __init__(self, C, tolerance=1e-5, max_iteration=10, loss="L1"):
         # 不可变训练参数
         self.C = C
         self.tolerance = tolerance
         self.max_iteration = max_iteration
+        self.loss = loss
 
     def solve(self, X, Y):
         batch, features = X.shape
@@ -26,7 +27,7 @@ class SMO:
                 flag_inter_over_set = False
                 for i in range(batch):
                     flag_iteration_count += 1
-                    status, data = self.inner_iteration(X, Y, E, i, alpha, b, batch)
+                    status, data = self.inner_iteration(X, Y, E, i, alpha, b, batch, loss=self.loss)
                     if status:
                         flag_alpha_changed += 1
                         b, alpha = data
@@ -46,11 +47,16 @@ class SMO:
 
         return alpha, b
 
-    def inner_iteration(self, X, Y, E, i, alpha, b, batch):
+    def inner_iteration(self, X, Y, E, i, alpha, b, batch, loss="L1"):
+        assert loss in ["L1", "L2"], "Loss 必须指定 L1 或 L2"
         E[i] = b + (alpha * Y).T @ X[:, i] - Y[i]
         # L1 计算误差，判断是否更新
-        cond1 = (Y[i] * E[i] < -self.tolerance and alpha[i] < self.C)
-        cond2 = (Y[i] * E[i] > self.tolerance and alpha[i] > 0)
+        if loss == "L1":
+            cond1 = (Y[i] * E[i] < -self.tolerance and alpha[i] < self.C)
+            cond2 = (Y[i] * E[i] > self.tolerance and alpha[i] > 0)
+        else:
+            cond1 = (Y[i] * E[i] < -self.tolerance)
+            cond2 = (Y[i] * E[i] > self.tolerance and alpha[i] > 0)
         if cond1 or cond2:
             # 如果满足条件
             # TODO: 实现j的启发式选择
@@ -64,24 +70,30 @@ class SMO:
             previous_alpha_i = alpha[i]
             previous_alpha_j = alpha[j]
             # 计算 L1 情况下的 eta
-            eta = 2 * X[i, j] - X[i, i] - X[j, j]
+            if loss == "L1":
+                eta = 2 * X[i, j] - X[i, i] - X[j, j]
+            else:
+                eta = 2 * X[i, j] - X[i, i] - X[j, j] - 1 / self.C
             if eta >= 0:
                 return False, None
 
             # 计算alpha j
             alpha[j] = alpha[j] - (Y[j] * (E[i] - E[j])) / eta
 
-            if Y[i] != Y[j]:
-                L = max(0, alpha[j] - alpha[i])
-                H = min(self.C, self.C + alpha[j] - alpha[i])
+            if loss == "L1":
+                if Y[i] != Y[j]:
+                    L = max(0, alpha[j] - alpha[i])
+                    H = min(self.C, self.C + alpha[j] - alpha[i])
+                else:
+                    L = max(0, alpha[i] + alpha[j] - self.C)
+                    H = min(self.C, alpha[i] + alpha[j])
+                if L == H:
+                    return False, None
+                # 修剪
+                alpha[j] = min(H, alpha[j])
+                alpha[j] = max(L, alpha[j])
             else:
-                L = max(0, alpha[i] + alpha[j] - self.C)
-                H = min(self.C, alpha[i] + alpha[j])
-            if L == H:
-                return False, None
-            # 修剪
-            alpha[j] = min(H, alpha[j])
-            alpha[j] = max(L, alpha[j])
+                alpha[j] = max(0, alpha[j])
 
             # 变化不明显
             if np.allclose(alpha[j], previous_alpha_j):
@@ -95,10 +107,18 @@ class SMO:
             b1 = b - E[i] - i_update * X[i, i] - j_update * X[i, j]
             b2 = b - E[j] - i_update * X[i, j] - j_update * X[j, j]
             # 计算 b
-            if 0 < alpha[i] < self.C:
-                b = b1
-            elif 0 < alpha[j] < self.C:
-                b = b2
+            if loss == "L1":
+                if 0 < alpha[i] < self.C:
+                    b = b1
+                elif 0 < alpha[j] < self.C:
+                    b = b2
+                else:
+                    b = (b1 + b2) / 2
             else:
-                b = (b1 + b2) / 2
+                if 0 < alpha[i]:
+                    b = b1
+                elif 0 < alpha[j]:
+                    b = b2
+                else:
+                    b = (b1 + b2) / 2
         return True, (b, alpha)

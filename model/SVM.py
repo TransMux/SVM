@@ -7,15 +7,16 @@ from model.algorithm.smo import SMO
 
 
 class SoftMarginKernelSVM:
-    def __init__(self, kernel: Callable[[np.ndarray, np.ndarray], np.ndarray] = no_kernel, solver=SMO, C=1.0):
+    def __init__(self, kernel: Callable[[np.ndarray, np.ndarray], np.ndarray] = no_kernel, solver=SMO, C=1.0,
+                 loss="L1"):
         self.kernel = kernel
-        self.solver = solver(C)
+        self.solver = solver(C, loss=loss)
         self.X = None
         self.Y = None
         self.alpha = None
         self.b = None
 
-    def fit(self, X: np.ndarray, Y: np.ndarray):
+    def fit(self, X: np.ndarray, Y: np.ndarray, loss="L1"):
         self.X = X
         self.Y = Y
         kernel_matrix = self.kernel(X, X)
