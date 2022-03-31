@@ -1,8 +1,10 @@
+import random
+
 import numpy as np
 
 
 class SMO:
-    def __init__(self, C, tolerance=1e-5, max_iteration=10000):
+    def __init__(self, C, tolerance=1e-5, max_iteration=10):
         # 不可变训练参数
         self.C = C
         self.tolerance = tolerance
@@ -27,7 +29,7 @@ class SMO:
                     status, data = self.inner_iteration(X, Y, E, i, alpha, b, batch)
                     if status:
                         flag_alpha_changed += 1
-                        b = data
+                        b, alpha = data
                         print(f"全样本遍历:第{flag_iteration_count}次迭代 样本:{i}, alpha优化次数:{flag_alpha_changed}")
             else:
                 out_bounds = np.nonzero((alpha > 0) * (alpha < self.C))[0]  # 遍历不在边界0和C的alpha
@@ -36,7 +38,7 @@ class SMO:
                     status, data = self.inner_iteration(X, Y, E, i, alpha, b, batch)
                     if status:
                         flag_alpha_changed += 1
-                        b = data
+                        b, alpha = data
                         print(f"非边界遍历:第{flag_iteration_count}次迭代 样本:{i}, alpha优化次数:{flag_alpha_changed}")
                 if not flag_alpha_changed:
                     flag_inter_over_set = True
@@ -99,4 +101,4 @@ class SMO:
                 b = b2
             else:
                 b = (b1 + b2) / 2
-        return True, b
+        return True, (b, alpha)

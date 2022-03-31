@@ -22,11 +22,16 @@ class SoftMarginKernelSVM:
         self.alpha, self.b = self.solver.solve(kernel_matrix, Y)
         self.alpha = self.alpha.squeeze()
 
-    def predict(self, X):
+    def predict(self, X, raw=False):
         # m * f, n * f -> m * n
         kernel_matrix = self.kernel(self.support_vectors_, X)
         # m * 1,
-        return (self.support_vectors_y.T * self.support_alphas) @ kernel_matrix + self.b
+        raw_predicts = np.squeeze((self.support_vectors_y.T * self.support_alphas) @ kernel_matrix + self.b)
+        if raw:
+            return raw_predicts
+        raw_predicts[raw_predicts > 0] = 1
+        raw_predicts[raw_predicts < 0] = -1
+        return raw_predicts
 
     @property
     def support_vectors_(self):
@@ -41,4 +46,4 @@ class SoftMarginKernelSVM:
         return self.alpha[self.alpha > 0]
 
     def decision_function(self, x: np.ndarray):
-        return self.predict(x)
+        return self.predict(x, raw=True)
