@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def draw(model, X, Y, ax, t):
+def draw(model, X, Y, ax, t, support_vectors=None):
     ax.scatter(X.iloc[:, 0], X.iloc[:, 1], c=Y, s=50, cmap='autumn')
     x_lim = ax.get_xlim()
     y_lim = ax.get_ylim()
@@ -20,5 +20,9 @@ def draw(model, X, Y, ax, t):
     ax.contour(XX, YY, Z, colors='k', levels=[-1, 0, 1], alpha=0.5,
                linestyles=['--', '-', '--'])
 
-    ax.scatter(model.support_vectors_[:, 0], model.support_vectors_[:, 1], s=100,
-               linewidth=1, facecolors='none', edgecolors='k')
+    if support_vectors is None:
+        ax.scatter(model.support_vectors_[:, 0], model.support_vectors_[:, 1], s=100,
+                   linewidth=1, facecolors='none', edgecolors='k')
+    else:
+        ax.scatter(support_vectors[:, 0], support_vectors[:, 1], s=100,
+                   linewidth=1, facecolors='none', edgecolors='k')

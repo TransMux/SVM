@@ -6,8 +6,10 @@ from model.algorithm.kernels import no_kernel
 from model.algorithm.smo import SMO
 
 
+#  Callable[[np.ndarray, np.ndarray], np.ndarray]
+
 class SoftMarginKernelSVM:
-    def __init__(self, kernel: Callable[[np.ndarray, np.ndarray], np.ndarray] = no_kernel, solver=SMO, C=1.0,
+    def __init__(self, kernel=no_kernel, solver=SMO, C=1.0,
                  loss="L1"):
         self.kernel = kernel
         self.solver = solver(C, loss=loss)
