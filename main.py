@@ -10,12 +10,16 @@ from model.algorithm.kernels import no_kernel, polynomial_kernel, gaussian_kerne
 from model.algorithm.utils import draw
 from sklearn.svm import SVC, LinearSVC
 
-# Init
+datasets = [
+    # "linear_hard_margin.csv",
+    "Circle.csv"
+]
 
+# Init
 fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, figsize=(10, 15))
 # fig.tight_layout()
 
-data = pd.read_csv("linear_hard_margin.csv")
+data = pd.read_csv(datasets[0])
 X, Y = data.iloc[:, :-1], data.iloc[:, -1]
 
 # 软间隔 L1 无核函数 SVM
@@ -81,4 +85,4 @@ end = time.time()
 draw(model, X, Y, ax8, f"Sklearn Gauss-kernel,t={round(end - begin, 2)}")
 
 plt.show()
-fig.savefig("Last.png")
+fig.savefig(f"Last-{datasets[0]}.png")

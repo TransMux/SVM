@@ -18,7 +18,7 @@ class SoftMarginKernelSVM:
         self.alpha = None
         self.b = None
 
-    def fit(self, X: np.ndarray, Y: np.ndarray, loss="L1"):
+    def fit(self, X: np.ndarray, Y: np.ndarray):
         self.X = X
         self.Y = Y
         kernel_matrix = self.kernel(X, X)
