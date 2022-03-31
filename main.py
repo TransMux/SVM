@@ -41,7 +41,7 @@ draw(model, X, Y, ax2, f"Sklearn L1 No-Kernel,t={round(end - begin, 2)}", suppor
 
 # 软间隔 L2 无核函数 SVM
 begin = time.time()
-model = SoftMarginKernelSVM(kernel=no_kernel)
+model = SoftMarginKernelSVM(kernel=no_kernel, C=1e10)
 model.fit(X.values, Y.values[:, np.newaxis])
 end = time.time()
 draw(model, X, Y, ax3, f"My L2 No-kernel,t={round(end - begin, 2)}")
@@ -86,3 +86,4 @@ draw(model, X, Y, ax8, f"Sklearn Gauss-kernel,t={round(end - begin, 2)}")
 
 plt.show()
 fig.savefig(f"Last-{datasets[0]}.png")
+fig.savefig(f"Last.png")
