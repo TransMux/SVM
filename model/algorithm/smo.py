@@ -31,7 +31,7 @@ class SMO:
                     if status:
                         flag_alpha_changed += 1
                         b, alpha = data
-                        print(f"全样本遍历:第{flag_iteration_count}次迭代 样本:{i}, alpha优化次数:{flag_alpha_changed}")
+                        # print(f"全样本遍历:第{flag_iteration_count}次迭代 样本:{i}, alpha优化次数:{flag_alpha_changed}")
             else:
                 out_bounds = np.nonzero((alpha > 0) * (alpha < self.C))[0]  # 遍历不在边界0和C的alpha
                 for i in out_bounds:
@@ -40,10 +40,10 @@ class SMO:
                     if status:
                         flag_alpha_changed += 1
                         b, alpha = data
-                        print(f"非边界遍历:第{flag_iteration_count}次迭代 样本:{i}, alpha优化次数:{flag_alpha_changed}")
+                        # print(f"非边界遍历:第{flag_iteration_count}次迭代 样本:{i}, alpha优化次数:{flag_alpha_changed}")
                 if not flag_alpha_changed:
                     flag_inter_over_set = True
-            print("迭代次数: %d" % flag_iteration_count)
+            # print("迭代次数: %d" % flag_iteration_count)
 
         return alpha, b
 

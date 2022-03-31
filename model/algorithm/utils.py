@@ -13,9 +13,10 @@ def draw(model, X, Y, ax, t, support_vectors=None):
     Z = model.decision_function(xy).reshape(XX.shape)
 
     predict = model.predict(X)
-    score = (predict == Y).sum() / X.shape[0]
-
-    ax.set_title(t + f" Acc: {score}")
+    score = round((predict == Y).sum() / X.shape[0], 2)
+    t = t + f" Acc: {score}"
+    print(t)
+    ax.set_title(t)
 
     ax.contour(XX, YY, Z, colors='k', levels=[-1, 0, 1], alpha=0.5,
                linestyles=['--', '-', '--'])
