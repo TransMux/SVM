@@ -6,13 +6,15 @@ import pandas as pd
 from matplotlib import pyplot as plt
 
 from model.SVM import SoftMarginKernelSVM
-from model.algorithm.kernels import no_kernel, polynomial_kernel
+from model.algorithm.kernels import no_kernel, polynomial_kernel, gaussian_kernel
 from model.algorithm.utils import draw
 from sklearn.svm import SVC, LinearSVC
 
 # Init
 
-fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6)) = plt.subplots(3, 2, figsize=(10, 10))
+fig, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, figsize=(10, 15))
+# fig.tight_layout()
+
 data = pd.read_csv("linear_hard_margin.csv")
 X, Y = data.iloc[:, :-1], data.iloc[:, -1]
 
@@ -63,6 +65,20 @@ model = SVC(kernel='poly')
 model.fit(X, Y)
 end = time.time()
 draw(model, X, Y, ax6, f"Sklearn Polynomial-kernel,t={round(end - begin, 2)}")
+
+# 软间隔 高斯核函数 SVM
+begin = time.time()
+model = SoftMarginKernelSVM(kernel=partial(gaussian_kernel, c=2))
+model.fit(X.values, Y.values[:, np.newaxis])
+end = time.time()
+draw(model, X, Y, ax7, f"My Gauss-kernel,t={round(end - begin, 2)}")
+
+# Sklearn 高斯核函数
+begin = time.time()
+model = SVC(kernel='rbf')
+model.fit(X, Y)
+end = time.time()
+draw(model, X, Y, ax8, f"Sklearn Gauss-kernel,t={round(end - begin, 2)}")
 
 plt.show()
 fig.savefig("Last.png")
