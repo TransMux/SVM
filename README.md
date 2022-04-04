@@ -1,4 +1,6 @@
-<h2 align="center">手搓SVM</h1>
+<h2 align="center">✨手搓SVM</h1>
+
+<div align="center"><a href="README-en.md">--> Readme.md in English <--</a></div>
 
 来自机器学习第四次实验~
 
