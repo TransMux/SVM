@@ -27,6 +27,8 @@ Pull requests and issues are highly welcomed，Leave a star if it is helpful ! T
 
 ### After All
 
+![](Last-linear_hard_margin.csv.png)
+
 ![](myplot.png)
 
 ### License

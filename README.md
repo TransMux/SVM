@@ -31,6 +31,8 @@
 
 ### 效果
 
+![](Last-linear_hard_margin.csv.png)
+
 ![](myplot.png)
 
 ### License
